@@ -1,0 +1,28 @@
+apply plugin: 'com.gradle.plugin-publish'
+apply plugin: 'com.jfrog.bintray'
+
+pluginBundle {
+    website = 'https://github.com/jishida/gradle-shell-script-plugin'
+    vcsUrl = 'https://github.com/jishida/gradle-shell-script-plugin'
+    description = 'A gradle plugin to run shell scripts on multi-platforms.'
+    tags = ['bash', 'shell script', 'msys2']
+
+    plugins {
+        shellScriptPlugin {
+            id = 'com.github.jishida.shellscript'
+            displayName = 'Gradle Shell Script plugin'
+        }
+    }
+}
+
+bintray {
+    user = System.getProperty('bintray.user')
+    key = System.getProperty('bintray.key')
+    pkg {
+        repo = 'generic'
+        name = 'gradle-shell-script-plugin'
+        userOrg = 'bintray_user'
+        licenses = ['MIT']
+        vcsUrl = 'https://github.com/jishida/gradle-shell-script-plugin.git'
+    }
+}
