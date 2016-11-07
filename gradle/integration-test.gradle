@@ -1,0 +1,23 @@
+sourceSets {
+    integrationTest { sourceSet ->
+        ['java', 'groovy', 'scala', 'kotlin', 'clojure', 'resources']
+                .findAll { sourceSet.hasProperty(it) }
+                .each { sourceSet."$it".srcDir file("src/integrationTest/$it") }
+    }
+}
+
+dependencies {
+    integrationTestCompile sourceSets.main.output
+    integrationTestCompile sourceSets.test.output
+    integrationTestCompile configurations.testCompile
+    integrationTestRuntime configurations.testRuntime
+}
+
+task integrationTest(type: Test, dependsOn: jar) {
+    group = 'verification'
+    testClassesDir = sourceSets.integrationTest.output.classesDir
+    classpath = sourceSets.integrationTest.runtimeClasspath
+    maxParallelForks = 1
+}
+
+check.dependsOn integrationTest

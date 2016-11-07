@@ -1,0 +1,17 @@
+group 'com.github.jishida.gradle'
+
+apply plugin: 'groovy'
+apply from: "$projectDir/gradle/integration-test.gradle"
+
+sourceCompatibility = compatibilityVersion
+targetCompatibility = compatibilityVersion
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    compile gradleApi()
+    compile group: 'org.tukaani', name: 'xz', version: '1.5'
+    testCompile group: 'com.netflix.nebula', name: 'nebula-test', version: '4.2.2'
+}
