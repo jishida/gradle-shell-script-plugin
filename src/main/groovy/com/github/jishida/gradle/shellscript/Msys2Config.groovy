@@ -40,7 +40,7 @@ class Msys2Config {
             expandDir = new File(cacheDir, 'local')
             final def bashPath = extension.bashPath ?: DEFAULT_MSYS2_BASH_PATH
             final def tempBash = new File(bashPath)
-            bashFile = tempBash.absolute ? tempBash : new File(expandDir, bashPath)
+            bashFile = (tempBash.absolute ? tempBash : new File(expandDir, bashPath)).canonicalFile
             archiveFile = new File(cacheDir, "archive/${findFileName(distUrl) ?: 'msys2_archive.unknown'}")
             unarchiverClass = extension.unarchiverClass
             hash = extension.sha256

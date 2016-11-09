@@ -35,7 +35,7 @@ class Msys2Extension {
 
     @PackageScope
     File getWorkingDirOrDefault() {
-        cacheDir ?: defaultWorkingDir
+        (cacheDir ?: defaultWorkingDir).canonicalFile
     }
 
     private File getDefaultWorkingDir() {
