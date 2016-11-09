@@ -53,6 +53,8 @@ class ShellScript extends DefaultTask implements ShellScriptTask {
 
     @TaskAction
     protected void run() {
+        final def workingDir_ = workingDir ?: project.projectDir
+
         project.exec {
             it.executable = shellExecutable
 
@@ -60,10 +62,8 @@ class ShellScript extends DefaultTask implements ShellScriptTask {
             if (windows) {
                 args_ << '--login'
 
-                final def env = [:] << System.getenv()
-                env['MSYSTEM'] = mSystem ?: DEFAULT_SHELL_SCRIPT_M_SYSTEM
-                env['CHERE_INVOKING'] = '1'
-                it.environment = env
+                it.environment['MSYSTEM'] = mSystem ?: DEFAULT_SHELL_SCRIPT_M_SYSTEM
+                it.environment['CHERE_INVOKING'] = '1'
             }
             if (!shellArgs.empty)
                 args_.addAll(shellArgs)
@@ -73,10 +73,10 @@ class ShellScript extends DefaultTask implements ShellScriptTask {
                 args_ << scriptFile.canonicalPath
             it.args = args_
 
-            if (workingDir != null) {
-                workingDir.mkdirs()
+            if (workingDir_ != null) {
+                workingDir_.mkdirs()
             }
-            it.workingDir = workingDir
+            it.workingDir = workingDir_
         }.rethrowFailure()
     }
 }
