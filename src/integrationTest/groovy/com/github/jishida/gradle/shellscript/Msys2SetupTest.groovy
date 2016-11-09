@@ -47,5 +47,16 @@ class Msys2SetupTest extends AbstractShellScriptTest {
         !windows || result.success
         !windows || result.wasExecuted(Tasks.MSYS2_SETUP)
         !windows || bashFile.file
+
+        when:
+        if (windows) {
+            bashFile.setLastModified(System.currentTimeMillis())
+            result = runTasks(Tasks.MSYS2_SETUP)
+            result.rethrowFailure()
+        }
+
+        then:
+        !windows || result.success
+        !windows || result.wasUpToDate(Tasks.MSYS2_SETUP)
     }
 }
