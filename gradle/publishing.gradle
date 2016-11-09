@@ -19,9 +19,8 @@ bintray {
     user = System.getProperty('bintray.user')
     key = System.getProperty('bintray.key')
     pkg {
-        repo = 'generic'
+        repo = 'maven'
         name = 'gradle-shell-script-plugin'
-        userOrg = 'bintray_user'
         licenses = ['MIT']
         vcsUrl = 'https://github.com/jishida/gradle-shell-script-plugin.git'
     }
