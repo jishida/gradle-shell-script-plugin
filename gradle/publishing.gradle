@@ -13,6 +13,10 @@ pluginBundle {
             displayName = 'Gradle Shell Script plugin'
         }
     }
+
+    mavenCoordinates {
+        groupId = 'com.github.jishida.gradle'
+    }
 }
 
 bintray {
