@@ -16,10 +16,11 @@ final class ProjectUtils {
     }
 
     static Msys2Config getBaseMsys2Config(final Project project) {
-        final def provisional = getMsys2Extension(project).cacheProject ?: project.rootProject
-        if (provisional == project.rootProject && getMsys2Extension(provisional) == null) {
-            provisional.apply plugin: ShellScriptPlugin
+        final def cacheProject = getMsys2Extension(project).cacheProject ?: project.rootProject
+        if (getMsys2Extension(cacheProject) == null) {
+            cacheProject.apply plugin: ShellScriptPlugin
+            getShellScriptExtension(cacheProject).msys2.cacheProject = cacheProject
         }
-        provisional == project ? null : getShellScriptExtension(provisional)?.configure()?.msys2
+        cacheProject == project ? null : getShellScriptExtension(cacheProject).configure().msys2
     }
 }

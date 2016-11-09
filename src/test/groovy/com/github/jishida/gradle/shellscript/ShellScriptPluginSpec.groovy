@@ -67,11 +67,21 @@ class ShellScriptPluginSpec extends PluginProjectSpec {
         sub2.apply plugin: pluginName
         sub3.apply plugin: pluginName
 
-        final def ext = project.extensions.getByType(ShellScriptExtension)
-        final def sub1Ext = sub1.extensions.getByType(ShellScriptExtension)
-        final def sub2Ext = sub2.extensions.getByType(ShellScriptExtension)
-        final def sub3Ext = sub3.extensions.getByType(ShellScriptExtension)
+        when:
+        final def ext = project.extensions.findByType(ShellScriptExtension)
+        final def sub1Ext = sub1.extensions.findByType(ShellScriptExtension)
+        final def sub2Ext = sub2.extensions.findByType(ShellScriptExtension)
+        final def sub3Ext = sub3.extensions.findByType(ShellScriptExtension)
+        final def sub4ExtNull = sub4.extensions.findByType(ShellScriptExtension)
 
+        then:
+        ext != null
+        sub1Ext != null
+        sub2Ext != null
+        sub3Ext != null
+        sub4ExtNull == null
+
+        when:
         ext.msys2.cacheDir = new File(projectDir, 'temp')
         ext.msys2.bashPath = 'msys64/usr/bin/bash.exe'
         ext.msys2.distUrl = 'http://repo.msys2.org/distrib/i686/msys2-base-x86_64-20161025.tar.xz'
@@ -84,12 +94,19 @@ class ShellScriptPluginSpec extends PluginProjectSpec {
         evaluate(sub1)
         evaluate(sub2)
         evaluate(sub3)
+        evaluate(sub4)
+
+        final def sub4Ext = sub4.extensions.findByType(ShellScriptExtension)
+
+        then:
+        sub4Ext != null
 
         when:
         final def config = ext.config
         final def sub1Config = sub1Ext.config
         final def sub2Config = sub2Ext.config
         final def sub3Config = sub3Ext.config
+        final def sub4Config = sub4Ext.config
 
         then:
         config.msys2.cacheDir == new File(projectDir, 'temp')
@@ -101,19 +118,21 @@ class ShellScriptPluginSpec extends PluginProjectSpec {
         verifyCacheProject(config.msys2, config.msys2)
         verifyCacheProject(config.msys2, sub1Config.msys2)
         verifyCacheProject(config.msys2, sub2Config.msys2)
-        verifyCacheProject(sub3Config.msys2, sub3Config.msys2)
+        verifyCacheProject(sub4Config.msys2, sub3Config.msys2)
 
         when:
         final def msys2Setup = project.tasks.findByName(Tasks.MSYS2_SETUP)
         final def sub1Msys2Setup = sub1.tasks.findByName(Tasks.MSYS2_SETUP)
         final def sub2Msys2Setup = sub2.tasks.findByName(Tasks.MSYS2_SETUP)
         final def sub3Msys2Setup = sub3.tasks.findByName(Tasks.MSYS2_SETUP)
+        final def sub4Msys2Setup = sub4.tasks.findByName(Tasks.MSYS2_SETUP)
 
         then:
         windows  || msys2Setup == null
         windows  || sub1Msys2Setup == null
         windows  || sub2Msys2Setup == null
         windows  || sub3Msys2Setup == null
+        windows  || sub4Msys2Setup == null
 
         !windows || msys2Setup.dependsOn.size() == 2
         !windows || msys2Setup.dependsOn.contains(Tasks.MSYS2_DOWNLOAD)
@@ -126,61 +145,12 @@ class ShellScriptPluginSpec extends PluginProjectSpec {
         !windows || sub2Msys2Setup.dependsOn.contains(Tasks.MSYS2_DOWNLOAD)
         !windows || sub2Msys2Setup.dependsOn.contains(msys2Setup)
 
-        !windows || sub3Msys2Setup.dependsOn.size() == 2
+        !windows || sub3Msys2Setup.dependsOn.size() == 3
         !windows || sub3Msys2Setup.dependsOn.contains(Tasks.MSYS2_DOWNLOAD)
-    }
+        !windows || sub3Msys2Setup.dependsOn.contains(sub4Msys2Setup)
 
-    def 'when `cacheProject` does not apply `ShellScriptPlugin`'(){
-        ['no-apply', 'ref-root', 'ref-no-apply'].each {
-            final def subproject = createSubproject(project, it)
-            project.subprojects.add(subproject)
-        }
-
-        final def noApplyRoot = project
-        final def noApply = project.project(':no-apply')
-        final def refNoApplyRoot = project.project(':ref-root')
-        final def refNoApply = project.project(':ref-no-apply')
-
-        refNoApplyRoot.apply plugin: ShellScriptPlugin
-        refNoApply.apply plugin: ShellScriptPlugin
-
-        when:
-        def noApplyRootExt = noApplyRoot.extensions.findByType(ShellScriptExtension)
-        def noApplyExt = noApply.extensions.findByType(ShellScriptExtension)
-        def refNoApplyRootExt = refNoApplyRoot.extensions.findByType(ShellScriptExtension)
-        def refNoApplyExt = refNoApply.extensions.findByType(ShellScriptExtension)
-
-        then:
-        noApplyRootExt == null
-        noApplyExt == null
-        refNoApplyRootExt != null
-        refNoApplyExt != null
-
-        when:
-        refNoApplyRootExt.msys2.cacheProject = noApplyRoot
-        refNoApplyExt.msys2.cacheProject = noApply
-
-        evaluate(noApplyRoot)
-        evaluate(noApply)
-        evaluate(refNoApplyRoot)
-        evaluate(refNoApply)
-
-        noApplyRootExt = noApplyRoot.extensions.findByType(ShellScriptExtension)
-        noApplyExt = noApply.extensions.findByType(ShellScriptExtension)
-        refNoApplyRootExt = refNoApplyRoot.extensions.findByType(ShellScriptExtension)
-        refNoApplyExt = refNoApply.extensions.findByType(ShellScriptExtension)
-
-        then:
-        noApplyRootExt != null
-        noApplyExt == null
-        refNoApplyRootExt != null
-        refNoApplyExt != null
-
-        noApplyRootExt.config.msys2.cacheProject == null
-        refNoApplyRootExt.config.msys2.cacheProject == noApplyRoot
-        refNoApplyExt.config.msys2.cacheProject == null
-
-        verifyCacheProject(noApplyRootExt.config.msys2, refNoApplyRootExt.config.msys2)
+        !windows || sub4Msys2Setup.dependsOn.size() == 2
+        !windows || sub4Msys2Setup.dependsOn.contains(Tasks.MSYS2_DOWNLOAD)
     }
 
     private static boolean verifyCacheProject(final Msys2Config cache, final Msys2Config config) {
