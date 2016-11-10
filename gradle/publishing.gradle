@@ -1,9 +1,10 @@
+apply plugin: 'maven-publish'
 apply plugin: 'com.gradle.plugin-publish'
 apply plugin: 'com.jfrog.bintray'
 
 pluginBundle {
     website = 'https://github.com/jishida/gradle-shell-script-plugin'
-    vcsUrl = 'https://github.com/jishida/gradle-shell-script-plugin'
+    vcsUrl = 'https://github.com/jishida/gradle-shell-script-plugin.git'
     description = 'A gradle plugin to run shell scripts on multi-platforms.'
     tags = ['bash', 'shell script', 'msys2']
 
@@ -13,16 +14,45 @@ pluginBundle {
             displayName = 'Gradle Shell Script plugin'
         }
     }
+
+    mavenCoordinates {
+        groupId = project.group
+        artifactId = project.name
+        version = project.version
+    }
+}
+
+publishing {
+    publications {
+        pluginJar(MavenPublication) {
+            from components.java
+            groupId project.group
+            artifactId project.name
+            version project.version
+
+            artifact publishPluginJar
+            artifact publishPluginJavaDocsJar
+            artifact publishPluginGroovyDocsJar
+        }
+    }
 }
 
 bintray {
-    user = System.getProperty('bintray.user')
-    key = System.getProperty('bintray.key')
+    user = project.hasProperty('bintrayUser') ? project.property('bintrayUser') : System.getenv('BINTRAY_USER')
+    key = project.hasProperty('bintrayApiKey') ? project.property('bintrayApiKey') : System.getenv('BINTRAY_API_KEY')
+    publications = ['pluginJar']
+
     pkg {
-        repo = 'generic'
+        repo = 'maven'
         name = 'gradle-shell-script-plugin'
-        userOrg = 'bintray_user'
         licenses = ['MIT']
+        websiteUrl = 'https://github.com/jishida/gradle-shell-script-plugin'
         vcsUrl = 'https://github.com/jishida/gradle-shell-script-plugin.git'
+        publicDownloadNumbers = true
+        githubRepo = 'jishida/gradle-shell-script-plugin'
+
+        version {
+            name = project.version
+        }
     }
 }

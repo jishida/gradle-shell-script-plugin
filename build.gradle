@@ -12,8 +12,8 @@ buildscript {
 group 'com.github.jishida.gradle'
 
 apply plugin: 'groovy'
-apply from: "$projectDir/gradle/integration-test.gradle"
-apply from: "$projectDir/gradle/publishing.gradle"
+apply from: file('gradle/integration-test.gradle')
+apply from: file('gradle/publishing.gradle')
 
 sourceCompatibility = compatibilityVersion
 targetCompatibility = compatibilityVersion
