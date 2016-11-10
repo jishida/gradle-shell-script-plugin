@@ -5,7 +5,7 @@ apply plugin: 'com.jfrog.bintray'
 pluginBundle {
     website = 'https://github.com/jishida/gradle-shell-script-plugin'
     vcsUrl = 'https://github.com/jishida/gradle-shell-script-plugin.git'
-    description = 'A gradle plugin to run shell scripts on multi-platforms.'
+    description = 'A gradle plugin to run shell scripts on Unix and Windows platforms.'
     tags = ['bash', 'shell script', 'msys2']
 
     plugins {
