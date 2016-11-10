@@ -14,7 +14,7 @@ directory of your project and run scripts on the MSYS2 environment.
 buildscript {
     repositories {
         maven {
-            url "https://plugins.gradle.org/m2/"
+            url "https://dl.bintray.com/jishida/maven"
         }
     }
     
