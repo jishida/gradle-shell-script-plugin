@@ -14,21 +14,12 @@ pluginBundle {
             displayName = 'Gradle Shell Script plugin'
         }
     }
-
-    mavenCoordinates {
-        groupId = project.group
-        artifactId = project.name
-        version = project.version
-    }
 }
 
 publishing {
     publications {
         pluginJar(MavenPublication) {
             from components.java
-            groupId project.group
-            artifactId project.name
-            version project.version
 
             artifact publishPluginJar
             artifact publishPluginJavaDocsJar
@@ -50,9 +41,5 @@ bintray {
         vcsUrl = 'https://github.com/jishida/gradle-shell-script-plugin.git'
         publicDownloadNumbers = true
         githubRepo = 'jishida/gradle-shell-script-plugin'
-
-        version {
-            name = project.version
-        }
     }
 }
