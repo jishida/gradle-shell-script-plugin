@@ -9,13 +9,11 @@ a shell script task on Windows, the task will install MSYS2 to the cache
 directory of your project and run scripts on the MSYS2 environment.
 
 ## Usage
-
+Setup the plugin like this
 ```gradle
 buildscript {
     repositories {
-        maven {
-            url "https://dl.bintray.com/jishida/maven"
-        }
+        jcenter()
     }
     
     dependencies {
@@ -24,12 +22,20 @@ buildscript {
 }
 
 apply plugin: 'com.github.jishida.shellscript'
-
+```
+or
+```gradle
+plugins {
+    id 'com.gradle.jishida.shellscript'
+}
+```
+## Running a shell script
+You can execute `my-script.sh` by defining the following task.
+```gradle
 task myShellScriptTask(type: ShellScript) {
     scriptFile = file('my-script.sh')
 }
 ```
-
 ## Options
 
 ```gradle
@@ -40,10 +46,10 @@ shellscript {
     // default: 'bash'
     unixShell = '/bin/usr/env'
     
-    // command line options of shell command
+    // command line options of shell command that applied all ShellScript tasks
     // type: java.util.List<java.lang.String>
     // default: null
-    shellArgs = ['bash', '--verbose',]
+    shellArgs = ['bash']
     
     // Windows platform settings
     msys2 {
@@ -90,26 +96,36 @@ shellscript {
 }
 
 // define shell script task
-task sampleTask(type: ShellScript) {
+task sampleTask(type: ShellScript) {    
+    // shell script file
+    // type: java.io.File
+    // default: null
+    scriptFile = null
+    
+    // shell script file
+    // type: java.lang.String
+    // default: null
+    scriptText = 'ls -a ../files > filelist.txt'
+
     // a directory running shell script
     // type: java.io.File
     // default: null
     workingDir = file('working_dir')
     
+    // command line options of script file
+    // type: java.util.List<java.lang.String>
+    // default: null
+    args = null
+    
     // command line options of shell command
     // type: java.util.List<java.lang.String>
     // default: null
-    args = ['-c', 'ls -a ../files > filelist.txt']
+    shellArgs = ['--verbose']
     
-    // MSYS2 option (MSYS, MINGW32 or MINGW64)
+    // MSYS2 option ('MSYS', 'MINGW32' or 'MINGW64')
     // type: java.lang.String
     // default: 'MSYS'
     mSystem = 'MINGW64'
-    
-    // shell script file
-    // type: java.io.File
-    // default: null
-    scriptFile = null
     
     // TaskInputs and TaskOutputs
     inputs.dir file('files')
