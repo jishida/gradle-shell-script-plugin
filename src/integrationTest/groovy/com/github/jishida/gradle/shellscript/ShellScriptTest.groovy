@@ -82,9 +82,15 @@ class ShellScriptTest extends AbstractShellScriptTest {
         new File(projectDir, 'working_dir/output file').file
 
         when:
+        outputFile.delete()
+
+        then:
+        !outputFile.exists()
+
+        when:
         scriptFile << '''
         exit 1
-        '''
+        '''.stripIndent()
         result = runTasks(TASK_NAME)
 
         then:
