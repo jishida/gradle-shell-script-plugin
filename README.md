@@ -17,7 +17,7 @@ buildscript {
     }
     
     dependencies {
-        classpath group: 'com.github.jishida.gradle', name: 'gradle-shell-script-plugin', version: '0.1'
+        classpath group: 'com.github.jishida.gradle', name: 'gradle-shell-script-plugin', version: '0.2'
     }
 }
 
@@ -26,7 +26,7 @@ apply plugin: 'com.github.jishida.shellscript'
 or
 ```gradle
 plugins {
-    id 'com.gradle.jishida.shellscript'
+    id 'com.gradle.jishida.shellscript' version '0.2'
 }
 ```
 ## Running a shell script
