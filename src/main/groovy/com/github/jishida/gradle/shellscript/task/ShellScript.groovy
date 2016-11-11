@@ -8,10 +8,12 @@ import static com.github.jishida.gradle.shellscript.ShellScriptStrings.*
 import static com.github.jishida.gradle.shellscript.util.EnvironmentUtils.windows
 
 class ShellScript extends DefaultTask implements ShellScriptTask {
+    File scriptFile
+    String scriptText
     File workingDir
     List<String> args
+    List<String> shellArgs
     String mSystem = DEFAULT_SHELL_SCRIPT_M_SYSTEM
-    File scriptFile
 
     ShellScript() {
         super()
@@ -29,14 +31,8 @@ class ShellScript extends DefaultTask implements ShellScriptTask {
         if (workingDir != null) {
             result['workingDir'] = workingDir
         }
-        if (args != null) {
-            result['args'] = args
-        }
-        if (scriptFile != null) {
-            result['scriptFile'] = scriptFile
-            if (scriptFile.file) {
-                result['scriptFileModified'] = scriptFile.lastModified()
-            }
+        if (scriptFile != null && scriptFile.file) {
+            result['scriptFileModified'] = scriptFile.lastModified()
         }
         result
     }
@@ -47,8 +43,30 @@ class ShellScript extends DefaultTask implements ShellScriptTask {
     }
 
     @Input
-    List<String> getShellArgs() {
-        shellScript?.shellArgs
+    List<String> getAllArgs() {
+        final def config = shellScript
+        if (config == null) return null
+        final def result = []
+        if (windows) {
+            result << '--login'
+        }
+        if (config.shellArgs != null && !config.shellArgs.empty) {
+            result.addAll(config.shellArgs)
+        }
+        if (shellArgs != null && !shellArgs.empty) {
+            result.addAll(shellArgs)
+        }
+        if (scriptFile != null) {
+            result << scriptFile.canonicalPath
+        } else if (scriptText != null) {
+            result.addAll(['-c', scriptText])
+        } else {
+            throw new IllegalStateException('must set `scriptFile` or `scriptText` property.')
+        }
+        if (args != null && !args.empty) {
+            result.addAll(args)
+        }
+        result
     }
 
     @TaskAction
@@ -58,20 +76,12 @@ class ShellScript extends DefaultTask implements ShellScriptTask {
         project.exec {
             it.executable = shellExecutable
 
-            final def args_ = []
             if (windows) {
-                args_ << '--login'
-
                 it.environment['MSYSTEM'] = mSystem ?: DEFAULT_SHELL_SCRIPT_M_SYSTEM
                 it.environment['CHERE_INVOKING'] = '1'
             }
-            if (!shellArgs.empty)
-                args_.addAll(shellArgs)
-            if (args != null && !args.empty)
-                args_.addAll(args)
-            if (scriptFile != null)
-                args_ << scriptFile.canonicalPath
-            it.args = args_
+
+            it.args = allArgs
 
             if (workingDir_ != null) {
                 workingDir_.mkdirs()

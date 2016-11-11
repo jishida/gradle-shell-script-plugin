@@ -5,7 +5,7 @@ import static com.github.jishida.gradle.shellscript.util.EnvironmentUtils.window
 
 class Msys2SetupTest extends AbstractShellScriptTest {
     private def getBashFile() {
-        new File(projectDir, 'tmp/local/msys32/usr/bin/bash.exe')
+        new File(projectDir, 'cache dir/local/msys32/usr/bin/bash.exe')
     }
 
     def 'run `msys2Setup` task'() {
