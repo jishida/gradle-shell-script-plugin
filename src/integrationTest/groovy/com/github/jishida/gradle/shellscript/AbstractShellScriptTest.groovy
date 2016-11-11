@@ -85,7 +85,7 @@ abstract class AbstractShellScriptTest extends IntegrationSpec {
             msys2 {
                 sha256 = '${MSYS2_TEST_ARCHIVE_HASH}'
                 distUrl = '${MSYS2_TEST_DIST_URL}'
-                cacheDir = file('tmp')
+                cacheDir = file('cache dir')
             }
         }
         """.stripIndent()

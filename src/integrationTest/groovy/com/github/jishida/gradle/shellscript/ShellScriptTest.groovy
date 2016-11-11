@@ -6,10 +6,8 @@ class ShellScriptTest extends AbstractShellScriptTest {
     def setup() {
         buildFile << """
         // ShellScriptTest
-        task $TASK_NAME(type: ShellScript) {
-            scriptFile = file('test.sh')
-        }
-        """
+        task $TASK_NAME(type: ShellScript)
+        """.stripIndent()
     }
 
     private def getScriptFile() {
@@ -17,18 +15,20 @@ class ShellScriptTest extends AbstractShellScriptTest {
     }
 
     private def getOutputFile() {
-        new File(projectDir, 'test.out')
+        new File(projectDir, 'output file')
     }
 
-    def 'run shell script'() {
+    def 'run shell script from file'() {
         buildFile << """
-        // run success script
-        ${TASK_NAME}.outputs.file file('test.sh')
+        // run shell script from file
+        ${TASK_NAME}.scriptFile = file('test.sh')
+        ${TASK_NAME}.args = ['output file']
+        ${TASK_NAME}.outputs.file file('output file')
         """.stripIndent()
 
         scriptFile << '''
         #!/usr/bin/env bash
-        touch test.out
+        touch "$1"
         '''.stripIndent()
 
         when:
@@ -63,9 +63,7 @@ class ShellScriptTest extends AbstractShellScriptTest {
         result.wasExecuted(TASK_NAME)
 
         when:
-        scriptFile << '''
-        exit 0
-        '''.stripIndent()
+        scriptFile.setLastModified(System.currentTimeMillis())
         result = runTasks(TASK_NAME)
         result.rethrowFailure()
 
@@ -81,19 +79,48 @@ class ShellScriptTest extends AbstractShellScriptTest {
         result.rethrowFailure()
 
         then:
-        result.success
-        result.wasExecuted(TASK_NAME)
-        new File(projectDir, 'working_dir/test.out').file
-    }
-
-    def 'exit shell script on error'() {
-        scriptFile << '''
-        #!/usr/bin/env bash
-        exit 1
-        '''
+        new File(projectDir, 'working_dir/output file').file
 
         when:
+        outputFile.delete()
+
+        then:
+        !outputFile.exists()
+
+        when:
+        scriptFile << '''
+        exit 1
+        '''.stripIndent()
+        result = runTasks(TASK_NAME)
+
+        then:
+        result.failure
+    }
+
+    def 'run shell script from text'() {
+        when:
         def result = runTasks(TASK_NAME)
+
+        then:
+        result.failure
+
+        when:
+        buildFile << """
+        // run shell script from text
+        ${TASK_NAME}.scriptText = 'exit 0'
+        """.stripIndent()
+        result = runTasks(TASK_NAME)
+        result.rethrowFailure()
+
+        then:
+        result.success
+        result.wasExecuted(TASK_NAME)
+
+        when:
+        buildFile << """
+        ${TASK_NAME}.scriptText = 'exit 1'
+        """.stripIndent()
+        result = runTasks(TASK_NAME)
 
         then:
         result.failure
