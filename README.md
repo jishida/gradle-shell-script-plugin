@@ -3,6 +3,9 @@ gradle-shell-script-plugin
 
 [![Travis CI Build Status](https://travis-ci.org/jishida/gradle-shell-script-plugin.svg?branch=master)](https://travis-ci.org/jishida/gradle-shell-script-plugin)
 [![AppVeyor Build status](https://ci.appveyor.com/api/projects/status/x3xrgsne0qixmyrb/branch/master?svg=true)](https://ci.appveyor.com/project/jishida/gradle-shell-script-plugin/branch/master)
+[![MIT License](http://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+[![Download](https://api.bintray.com/packages/jishida/maven/gradle-shell-script-plugin/images/download.svg) ](https://bintray.com/jishida/maven/gradle-shell-script-plugin/_latestVersion)
+
 
 This plugin enables you to run shell scripts on multiple platforms. If you run
 a shell script task on Windows, the task will install MSYS2 to the cache
