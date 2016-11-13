@@ -102,7 +102,7 @@ task sampleTask(type: ShellScript) {
     // default: null
     scriptFile = null
     
-    // shell script file
+    // shell script text
     // type: java.lang.String
     // default: null
     scriptText = 'ls -a ../files > filelist.txt'
