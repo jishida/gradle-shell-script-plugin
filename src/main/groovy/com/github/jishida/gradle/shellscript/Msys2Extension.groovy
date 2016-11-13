@@ -54,12 +54,9 @@ class Msys2Extension {
 
     @PackageScope
     Class<? extends Unarchiver> getUnarchiverClass() {
-        final def type = { String it ->
-            (it.startsWith('.') ? it.substring(1) : it).toLowerCase()
-        }.call(archiveType ?: 'tar.xz')
-        final def result = unarchiverMap[type]
+        final def result = unarchiverMap[archiveType]
         if (result == null) {
-            throw new UnsupportedOperationException("unknown archive type `$type`")
+            throw new UnsupportedOperationException("unknown archive type `$archiveType`")
         }
         result
     }
