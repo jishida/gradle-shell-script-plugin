@@ -29,7 +29,7 @@ apply plugin: 'com.github.jishida.shellscript'
 or
 ```gradle
 plugins {
-    id 'com.gradle.jishida.shellscript' version '0.2.1'
+    id 'com.github.jishida.shellscript' version '0.2.1'
 }
 ```
 ## Running a shell script
