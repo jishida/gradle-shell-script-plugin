@@ -3,6 +3,9 @@ gradle-shell-script-plugin
 
 [![Travis CI Build Status](https://travis-ci.org/jishida/gradle-shell-script-plugin.svg?branch=master)](https://travis-ci.org/jishida/gradle-shell-script-plugin)
 [![AppVeyor Build status](https://ci.appveyor.com/api/projects/status/x3xrgsne0qixmyrb/branch/master?svg=true)](https://ci.appveyor.com/project/jishida/gradle-shell-script-plugin/branch/master)
+[![MIT License](http://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+[![Download](https://api.bintray.com/packages/jishida/maven/gradle-shell-script-plugin/images/download.svg) ](https://bintray.com/jishida/maven/gradle-shell-script-plugin/_latestVersion)
+
 
 This plugin enables you to run shell scripts on multiple platforms. If you run
 a shell script task on Windows, the task will install MSYS2 to the cache
@@ -17,7 +20,7 @@ buildscript {
     }
     
     dependencies {
-        classpath group: 'com.github.jishida.gradle', name: 'gradle-shell-script-plugin', version: '0.2'
+        classpath group: 'com.github.jishida.gradle', name: 'gradle-shell-script-plugin', version: '0.2.1'
     }
 }
 
@@ -26,7 +29,7 @@ apply plugin: 'com.github.jishida.shellscript'
 or
 ```gradle
 plugins {
-    id 'com.gradle.jishida.shellscript' version '0.2'
+    id 'com.github.jishida.shellscript' version '0.2.1'
 }
 ```
 ## Running a shell script
@@ -102,7 +105,7 @@ task sampleTask(type: ShellScript) {
     // default: null
     scriptFile = null
     
-    // shell script file
+    // shell script text
     // type: java.lang.String
     // default: null
     scriptText = 'ls -a ../files > filelist.txt'

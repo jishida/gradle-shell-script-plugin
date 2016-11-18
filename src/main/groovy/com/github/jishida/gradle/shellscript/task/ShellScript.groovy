@@ -25,9 +25,9 @@ class ShellScript extends DefaultTask implements ShellScriptTask {
 
     @Input
     Map getShellScriptInputs() {
-        final def result = [:]
-        result['mSystem'] = mSystem ?: (Object) DEFAULT_SHELL_SCRIPT_M_SYSTEM
-
+        final def result = [
+                mSystem: mSystem ?: DEFAULT_SHELL_SCRIPT_M_SYSTEM
+        ]
         if (workingDir != null) {
             result['workingDir'] = workingDir
         }
