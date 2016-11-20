@@ -8,7 +8,7 @@ import org.gradle.api.internal.project.AbstractProject
 import static com.github.jishida.gradle.shellscript.ShellScriptStrings.*
 import static com.github.jishida.gradle.shellscript.util.EnvironmentUtils.windows
 
-class ShellScriptPluginSpec extends PluginProjectSpec {
+class ShellScriptPluginTest extends PluginProjectSpec {
     @Override
     String getPluginName() {
         'com.github.jishida.shellscript'
@@ -17,7 +17,7 @@ class ShellScriptPluginSpec extends PluginProjectSpec {
     def 'check default `shellscript` extension'() {
         setup:
         project.apply plugin: pluginName
-        final def ext = project.extensions.getByType(ShellScriptExtension)
+        final ext = project.extensions.getByType(ShellScriptExtension)
         def config = ext.config
 
         expect:
@@ -54,13 +54,13 @@ class ShellScriptPluginSpec extends PluginProjectSpec {
 
     def 'check multi-project configrations'() {
         ['sub1', 'sub2', 'sub3', 'sub4'].each { subprojectName ->
-            final def subproject = createSubproject(project, subprojectName)
+            final subproject = createSubproject(project, subprojectName)
             project.subprojects.add(subproject)
         }
-        final def sub1 = project.project(':sub1')
-        final def sub2 = project.project(':sub2')
-        final def sub3 = project.project(':sub3')
-        final def sub4 = project.project(':sub4')
+        final sub1 = project.project(':sub1')
+        final sub2 = project.project(':sub2')
+        final sub3 = project.project(':sub3')
+        final sub4 = project.project(':sub4')
 
         project.apply plugin: pluginName
         sub1.apply plugin: pluginName
@@ -68,11 +68,11 @@ class ShellScriptPluginSpec extends PluginProjectSpec {
         sub3.apply plugin: pluginName
 
         when:
-        final def ext = project.extensions.findByType(ShellScriptExtension)
-        final def sub1Ext = sub1.extensions.findByType(ShellScriptExtension)
-        final def sub2Ext = sub2.extensions.findByType(ShellScriptExtension)
-        final def sub3Ext = sub3.extensions.findByType(ShellScriptExtension)
-        final def sub4ExtNull = sub4.extensions.findByType(ShellScriptExtension)
+        final ext = project.extensions.findByType(ShellScriptExtension)
+        final sub1Ext = sub1.extensions.findByType(ShellScriptExtension)
+        final sub2Ext = sub2.extensions.findByType(ShellScriptExtension)
+        final sub3Ext = sub3.extensions.findByType(ShellScriptExtension)
+        final sub4ExtNull = sub4.extensions.findByType(ShellScriptExtension)
 
         then:
         ext != null
@@ -96,17 +96,17 @@ class ShellScriptPluginSpec extends PluginProjectSpec {
         evaluate(sub3)
         evaluate(sub4)
 
-        final def sub4Ext = sub4.extensions.findByType(ShellScriptExtension)
+        final sub4Ext = sub4.extensions.findByType(ShellScriptExtension)
 
         then:
         sub4Ext != null
 
         when:
-        final def config = ext.config
-        final def sub1Config = sub1Ext.config
-        final def sub2Config = sub2Ext.config
-        final def sub3Config = sub3Ext.config
-        final def sub4Config = sub4Ext.config
+        final config = ext.config
+        final sub1Config = sub1Ext.config
+        final sub2Config = sub2Ext.config
+        final sub3Config = sub3Ext.config
+        final sub4Config = sub4Ext.config
 
         then:
         config.msys2.cacheDir == new File(projectDir, 'temp')
@@ -121,11 +121,11 @@ class ShellScriptPluginSpec extends PluginProjectSpec {
         verifyCacheProject(sub4Config.msys2, sub3Config.msys2)
 
         when:
-        final def msys2Setup = project.tasks.findByName(Tasks.MSYS2_SETUP)
-        final def sub1Msys2Setup = sub1.tasks.findByName(Tasks.MSYS2_SETUP)
-        final def sub2Msys2Setup = sub2.tasks.findByName(Tasks.MSYS2_SETUP)
-        final def sub3Msys2Setup = sub3.tasks.findByName(Tasks.MSYS2_SETUP)
-        final def sub4Msys2Setup = sub4.tasks.findByName(Tasks.MSYS2_SETUP)
+        final msys2Setup = project.tasks.findByName(Tasks.MSYS2_SETUP)
+        final sub1Msys2Setup = sub1.tasks.findByName(Tasks.MSYS2_SETUP)
+        final sub2Msys2Setup = sub2.tasks.findByName(Tasks.MSYS2_SETUP)
+        final sub3Msys2Setup = sub3.tasks.findByName(Tasks.MSYS2_SETUP)
+        final sub4Msys2Setup = sub4.tasks.findByName(Tasks.MSYS2_SETUP)
 
         then:
         windows  || msys2Setup == null

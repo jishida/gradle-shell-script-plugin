@@ -28,24 +28,24 @@ class Msys2Config {
     final boolean setup
 
     @PackageScope
-    Msys2Config(final Msys2Extension extension) {
-        project = extension.project
+    Msys2Config(final Msys2Spec spec) {
+        project = spec.project
 
-        final def config = getBaseMsys2Config(project)
+        final config = getBaseMsys2Config(project)
 
         if (config == null) {
             cacheProject = null
-            distUrl = new URL(extension.distUrl ?: DEFAULT_MSYS2_DIST_URL)
-            cacheDir = extension.workingDirOrDefault
+            distUrl = new URL(spec.distUrl ?: DEFAULT_MSYS2_DIST_URL)
+            cacheDir = spec.workingDirOrDefault
             expandDir = new File(cacheDir, 'local')
-            final def bashPath = extension.bashPath ?: DEFAULT_MSYS2_BASH_PATH
-            final def tempBash = new File(bashPath)
+            final bashPath = spec.bashPath ?: DEFAULT_MSYS2_BASH_PATH
+            final tempBash = new File(bashPath)
             bashFile = (tempBash.absolute ? tempBash : new File(expandDir, bashPath)).canonicalFile
             archiveFile = new File(cacheDir, "archive/${findFileName(distUrl) ?: 'msys2_archive.unknown'}")
-            unarchiverClass = extension.unarchiverClass
-            hash = extension.sha256
-            verify = extension.verify
-            setup = extension.setup
+            unarchiverClass = spec.unarchiverClass
+            hash = spec.sha256
+            verify = spec.verify
+            setup = spec.setup
         } else {
             cacheProject = config.cacheProject ?: config.project
             distUrl = config.distUrl

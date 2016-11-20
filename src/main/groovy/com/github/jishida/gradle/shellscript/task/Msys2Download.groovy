@@ -1,23 +1,16 @@
 package com.github.jishida.gradle.shellscript.task
 
 import com.github.jishida.gradle.shellscript.Msys2Config
-import org.gradle.api.DefaultTask
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.OutputFile
 import org.gradle.api.tasks.TaskAction
 
-import static com.github.jishida.gradle.shellscript.ShellScriptStrings.ID
 import static com.github.jishida.gradle.shellscript.util.FileUtils.deleteFile
 import static com.github.jishida.gradle.shellscript.util.FileUtils.verifyMsys2Archive
 
-class Msys2Download extends DefaultTask implements ShellScriptTask {
-    Msys2Download() {
-        super()
-        group = ID
-    }
-
+class Msys2Download extends AbstractShellScriptTask {
     Msys2Config getConfig() {
-        shellScript?.msys2
+        shellScriptConfig?.msys2
     }
 
     @Input
@@ -48,7 +41,6 @@ class Msys2Download extends DefaultTask implements ShellScriptTask {
 
     @TaskAction
     protected void download() {
-        final def config = shellScript.msys2
         if (!config.setup) return
 
         deleteFile(config.archiveFile)

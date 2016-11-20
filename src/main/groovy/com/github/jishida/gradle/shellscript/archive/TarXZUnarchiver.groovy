@@ -46,7 +46,7 @@ class TarXZUnarchiver implements Unarchiver {
 
     @Override
     FileTree getFileTree(final Project project, final File archiveFile) {
-        final def resource = ((DefaultProject) project).fileResolver.resolveResource(archiveFile)
+        final resource = ((DefaultProject) project).fileResolver.resolveResource(archiveFile)
         project.tarTree(new XZArchiver(resource))
     }
 }

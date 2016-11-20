@@ -51,7 +51,7 @@ shellscript {
     
     // command line options of shell command that applied all ShellScript tasks
     // type: java.util.List<java.lang.String>
-    // default: null
+    // default: []
     shellArgs = ['bash']
     
     // Windows platform settings
@@ -117,12 +117,12 @@ task sampleTask(type: ShellScript) {
     
     // command line options of script file
     // type: java.util.List<java.lang.String>
-    // default: null
-    args = null
+    // default: []
+    args = []
     
     // command line options of shell command
     // type: java.util.List<java.lang.String>
-    // default: null
+    // default: []
     shellArgs = ['--verbose']
     
     // MSYS2 option ('MSYS', 'MINGW32' or 'MINGW64')

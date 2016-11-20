@@ -87,7 +87,7 @@ class Msys2DownloadTest extends AbstractShellScriptTest {
         shellscript.msys2.distUrl = 'http://localhost:8080/dist/missing.tar.xz'
         '''.stripIndent()
         when:
-        final def result = runTasks(Tasks.MSYS2_DOWNLOAD)
+        final result = runTasks(Tasks.MSYS2_DOWNLOAD)
 
         then:
         result.failure
@@ -99,7 +99,7 @@ class Msys2DownloadTest extends AbstractShellScriptTest {
         shellscript.msys2.sha256 = 'invalid string'
         '''.stripIndent()
         when:
-        final def result = runTasks(Tasks.MSYS2_DOWNLOAD)
+        final result = runTasks(Tasks.MSYS2_DOWNLOAD)
 
         then:
         result.failure

@@ -4,18 +4,16 @@ import com.github.jishida.gradle.shellscript.Msys2Config
 import org.gradle.api.DefaultTask
 import org.gradle.api.tasks.*
 
-import static com.github.jishida.gradle.shellscript.ShellScriptStrings.ID
+import static com.github.jishida.gradle.shellscript.ShellScriptStrings.PLUGIN_ID
 import static com.github.jishida.gradle.shellscript.ShellScriptStrings.Tasks
 
-class Msys2Setup extends DefaultTask implements ShellScriptTask {
+class Msys2Setup extends AbstractShellScriptTask {
     Msys2Setup() {
-        super()
-        group = ID
         dependsOn(Tasks.MSYS2_DOWNLOAD)
     }
 
     Msys2Config getConfig() {
-        shellScript?.msys2
+        shellScriptConfig?.msys2
     }
 
     @InputFile
@@ -45,7 +43,6 @@ class Msys2Setup extends DefaultTask implements ShellScriptTask {
 
     @TaskAction
     void setup() {
-        final config = shellScript.msys2
         if (!config.setup) return
 
         config.expandDir.deleteDir()
@@ -57,7 +54,7 @@ class Msys2Setup extends DefaultTask implements ShellScriptTask {
         }
 
         project.exec {
-            it.executable = config.bashFile.canonicalPath
+            it.executable = config.bashFile
             it.args = ['--login', '-c', 'exit 0',]
         }.rethrowFailure()
     }

@@ -1,7 +1,7 @@
 package com.github.jishida.gradle.shellscript
 
 class ShellScriptTest extends AbstractShellScriptTest {
-    final static def TASK_NAME = 'runShellScript'
+    final static TASK_NAME = 'runShellScript'
 
     def setup() {
         buildFile << """

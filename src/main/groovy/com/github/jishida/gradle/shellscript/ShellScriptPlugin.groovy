@@ -13,16 +13,13 @@ import static com.github.jishida.gradle.shellscript.util.EnvironmentUtils.window
 class ShellScriptPlugin implements Plugin<Project> {
     @Override
     void apply(final Project project) {
-        final def extension = project.extensions.create(EXTENSION_NAME, ShellScriptExtension, project)
-        final def msys2Download = windows ? project.tasks.create(Tasks.MSYS2_DOWNLOAD, Msys2Download) : null
-        final def msys2Setup = windows ? project.tasks.create(Tasks.MSYS2_SETUP, Msys2Setup) : null
+        final extension = project.extensions.create(EXTENSION_NAME, ShellScriptExtension, project)
+        if (windows) project.tasks.create(Tasks.MSYS2_DOWNLOAD, Msys2Download)
+        if (windows) project.tasks.create(Tasks.MSYS2_SETUP, Msys2Setup)
         project.extensions.extraProperties.set(ShellScript.simpleName, ShellScript)
 
         project.afterEvaluate {
-            final def config = extension.configure()
-            if (windows && config.msys2.cacheProject != null) {
-                msys2Setup.dependsOn(config.msys2.cacheProject.tasks.getByName(Tasks.MSYS2_SETUP))
-            }
+            extension.configure()
         }
     }
 }
