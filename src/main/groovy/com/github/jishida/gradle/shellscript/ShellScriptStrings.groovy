@@ -6,7 +6,7 @@ final class ShellScriptStrings {
 
     final static DEFAULT_UNIX_SHELL = 'bash'
 
-    final static DEFAULT_MSYS2_DIST_URL = 'http://repo.msys2.org/distrib/i686/msys2-base-i686-20160921.tar.xz'
+    final static DEFAULT_MSYS2_DIST_URL = 'http://repo.msys2.org/distrib/i686/msys2-base-i686-20161025.tar.xz'
     final static DEFAULT_MSYS2_CACHE_PATH = '.gradle/msys2'
     final static DEFAULT_MSYS2_BASH_PATH = 'msys32/usr/bin/bash.exe'
 

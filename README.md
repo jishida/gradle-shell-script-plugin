@@ -63,7 +63,7 @@ shellscript {
         
         // distribution URL of MSYS2
         // type: java.lang.String
-        // default: 'http://repo.msys2.org/distrib/i686/msys2-base-i686-20160921.tar.xz'
+        // default: 'http://repo.msys2.org/distrib/i686/msys2-base-i686-20161025.tar.xz'
         distUrl = 'http://localhost:8080/dist/msys2-base-x86_64-20160921.tar.xz'
         
         // bash binary path from expanded directory

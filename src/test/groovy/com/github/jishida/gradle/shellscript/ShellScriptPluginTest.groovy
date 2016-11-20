@@ -45,7 +45,7 @@ class ShellScriptPluginTest extends PluginProjectSpec {
         config.msys2.cacheDir == new File(projectDir, DEFAULT_MSYS2_CACHE_PATH)
         config.msys2.expandDir == new File(projectDir, "${DEFAULT_MSYS2_CACHE_PATH}/local").canonicalFile
         config.msys2.bashFile == new File(config.msys2.expandDir, DEFAULT_MSYS2_BASH_PATH).canonicalFile
-        config.msys2.archiveFile == new File(projectDir, "${DEFAULT_MSYS2_CACHE_PATH}/archive/msys2-base-i686-20160921.tar.xz")
+        config.msys2.archiveFile == new File(projectDir, "${DEFAULT_MSYS2_CACHE_PATH}/archive/msys2-base-i686-20161025.tar.xz")
         config.msys2.unarchiverClass == TarXZUnarchiver
         config.msys2.hash == null
         config.msys2.verify
