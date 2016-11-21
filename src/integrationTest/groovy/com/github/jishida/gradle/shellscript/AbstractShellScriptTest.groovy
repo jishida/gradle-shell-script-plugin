@@ -14,13 +14,13 @@ import static com.github.jishida.gradle.shellscript.util.FileUtils.deleteFile
 import static com.github.jishida.gradle.shellscript.util.FileUtils.verifyMsys2Archive
 
 abstract class AbstractShellScriptTest extends IntegrationSpec {
-    final static def MSYS2_TEST_ARCHIVE_NAME = 'msys2-base-i686-20161025.tar.xz'
-    final static def MSYS2_TEST_ARCHIVE_HASH = '8bafd3d52f5a51528a8671c1cae5591b36086d6ea5b1e76e17e390965cf6768f'
-    final static def MSYS2_TEST_DIST_URL = "http://localhost:8080/dist/$MSYS2_TEST_ARCHIVE_NAME"
+    final static MSYS2_TEST_ARCHIVE_NAME = 'msys2-base-i686-20161025.tar.xz'
+    final static MSYS2_TEST_ARCHIVE_HASH = '8bafd3d52f5a51528a8671c1cae5591b36086d6ea5b1e76e17e390965cf6768f'
+    final static MSYS2_TEST_DIST_URL = "http://localhost:8080/dist/$MSYS2_TEST_ARCHIVE_NAME"
 
-    private final static def CACHE_PATH = 'build/cache/gradle-shell-script-plugin'
-    private final static def MSYS2_DIST_URL = "http://repo.msys2.org/distrib/i686/$MSYS2_TEST_ARCHIVE_NAME"
-    private final static def MSYS2_ARCHIVE_PATH = "$CACHE_PATH/dist/$MSYS2_TEST_ARCHIVE_NAME"
+    private final static CACHE_PATH = 'build/cache/gradle-shell-script-plugin'
+    private final static MSYS2_DIST_URL = "http://repo.msys2.org/distrib/i686/$MSYS2_TEST_ARCHIVE_NAME"
+    private final static MSYS2_ARCHIVE_PATH = "$CACHE_PATH/dist/$MSYS2_TEST_ARCHIVE_NAME"
 
     @Shared
     private File _msys2ArchiveFile
@@ -109,7 +109,7 @@ abstract class AbstractShellScriptTest extends IntegrationSpec {
     }
 
     private static String getJarVersion() {
-        final def props = new Properties()
+        final props = new Properties()
         new File('gradle.properties').withInputStream {
             props.load(it)
         }

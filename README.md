@@ -20,7 +20,7 @@ buildscript {
     }
     
     dependencies {
-        classpath group: 'com.github.jishida.gradle', name: 'gradle-shell-script-plugin', version: '0.2.1'
+        classpath 'com.github.jishida.gradle:gradle-shell-script-plugin:0.2.2'
     }
 }
 
@@ -29,7 +29,7 @@ apply plugin: 'com.github.jishida.shellscript'
 or
 ```gradle
 plugins {
-    id 'com.github.jishida.shellscript' version '0.2.1'
+    id 'com.github.jishida.shellscript' version '0.2.2'
 }
 ```
 ## Running a shell script
@@ -51,7 +51,7 @@ shellscript {
     
     // command line options of shell command that applied all ShellScript tasks
     // type: java.util.List<java.lang.String>
-    // default: null
+    // default: []
     shellArgs = ['bash']
     
     // Windows platform settings
@@ -63,7 +63,7 @@ shellscript {
         
         // distribution URL of MSYS2
         // type: java.lang.String
-        // default: 'http://repo.msys2.org/distrib/i686/msys2-base-i686-20160921.tar.xz'
+        // default: 'http://repo.msys2.org/distrib/i686/msys2-base-i686-20161025.tar.xz'
         distUrl = 'http://localhost:8080/dist/msys2-base-x86_64-20160921.tar.xz'
         
         // bash binary path from expanded directory
@@ -117,12 +117,12 @@ task sampleTask(type: ShellScript) {
     
     // command line options of script file
     // type: java.util.List<java.lang.String>
-    // default: null
-    args = null
+    // default: []
+    args = []
     
     // command line options of shell command
     // type: java.util.List<java.lang.String>
-    // default: null
+    // default: []
     shellArgs = ['--verbose']
     
     // MSYS2 option ('MSYS', 'MINGW32' or 'MINGW64')

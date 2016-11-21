@@ -2,7 +2,7 @@ package com.github.jishida.gradle.shellscript.util
 
 import spock.lang.Specification
 
-class URLUtilsSpec extends Specification {
+class URLUtilsTest extends Specification {
     def 'check `findFileName` results'() {
         expect:
         URLUtils.findFileName(new URL(url)) == name

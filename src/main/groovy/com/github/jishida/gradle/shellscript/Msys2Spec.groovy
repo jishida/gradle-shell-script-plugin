@@ -6,7 +6,7 @@ import org.gradle.api.Project
 
 import static com.github.jishida.gradle.shellscript.ShellScriptStrings.*
 
-class Msys2Extension {
+class Msys2Spec {
     private final Map<String, Class<? extends Unarchiver>> unarchiverMap = [
             'tar'    : TarUnarchiver,
             'tar.bz2': TarBzip2Unarchiver,
@@ -27,7 +27,7 @@ class Msys2Extension {
     File cacheDir
     boolean setup = true
 
-    Msys2Extension(final Project project) {
+    Msys2Spec(final Project project) {
         this.project = project
         cacheDir = defaultWorkingDir
         cacheProject = project.rootProject
@@ -54,7 +54,7 @@ class Msys2Extension {
 
     @PackageScope
     Class<? extends Unarchiver> getUnarchiverClass() {
-        final def result = unarchiverMap[archiveType]
+        final result = unarchiverMap[archiveType]
         if (result == null) {
             throw new UnsupportedOperationException("unknown archive type `$archiveType`")
         }

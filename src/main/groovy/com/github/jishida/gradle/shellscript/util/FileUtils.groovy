@@ -35,20 +35,20 @@ final class FileUtils {
     }
 
     static boolean verifyMsys2Archive(final File file, final String configuredHash = null) {
-        final def expected = configuredHash ?: msys2Hashes[file.name]
+        final expected = configuredHash ?: msys2Hashes[file.name]
         if (expected == null) return false
 
         try {
             file.withInputStream {
-                final def buffer = new byte[1024]
-                final def md = MessageDigest.getInstance('SHA-256')
+                final buffer = new byte[1024]
+                final md = MessageDigest.getInstance('SHA-256')
                 int size
                 while ((size = it.read(buffer)) >= 0) {
                     if (size != 0) {
                         md.update(buffer, 0, size)
                     }
                 }
-                final def hash = md.digest()
+                final hash = md.digest()
                 def actual = new StringBuilder(64)
                 for (b in hash) {
                     actual.append(String.format('%02x', b))
