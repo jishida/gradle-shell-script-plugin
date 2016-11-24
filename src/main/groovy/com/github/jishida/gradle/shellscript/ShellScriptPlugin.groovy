@@ -14,8 +14,10 @@ class ShellScriptPlugin implements Plugin<Project> {
     @Override
     void apply(final Project project) {
         final extension = project.extensions.create(EXTENSION_NAME, ShellScriptExtension, project)
-        if (windows) project.tasks.create(Tasks.MSYS2_DOWNLOAD, Msys2Download)
-        if (windows) project.tasks.create(Tasks.MSYS2_SETUP, Msys2Setup)
+        if (windows) {
+            project.tasks.create(Tasks.MSYS2_DOWNLOAD, Msys2Download)
+            project.tasks.create(Tasks.MSYS2_SETUP, Msys2Setup)
+        }
         project.extensions.extraProperties.set(ShellScript.simpleName, ShellScript)
 
         project.afterEvaluate {

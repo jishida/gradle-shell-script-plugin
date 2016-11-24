@@ -6,11 +6,12 @@ import org.gradle.api.Project
 import org.gradle.api.internal.ClosureBackedAction
 
 import static com.github.jishida.gradle.shellscript.ShellScriptStrings.DEFAULT_UNIX_SHELL
+import static com.github.jishida.gradle.shellscript.ShellScriptStrings.Tasks.MSYS2_DOWNLOAD
 import static com.github.jishida.gradle.shellscript.ShellScriptStrings.Tasks.MSYS2_SETUP
 import static com.github.jishida.gradle.shellscript.util.EnvironmentUtils.windows
 
 class ShellScriptExtension {
-    private ShellScriptConfig _config
+    private ShellScriptInfo _info
     private final List<String> _shellArgs = []
 
     final Project project
@@ -23,18 +24,22 @@ class ShellScriptExtension {
         msys2 = new Msys2Spec(project)
     }
 
-    ShellScriptConfig getConfig() { _config }
+    ShellScriptInfo getInfo() { _info }
 
     @PackageScope
-    ShellScriptConfig configure() {
-        if (_config == null) {
-            _config = new ShellScriptConfig(this)
-            if (windows && _config.msys2.cacheProject != null) {
+    ShellScriptInfo configure() {
+        if (_info == null) {
+            _info = new ShellScriptInfo(this)
+            if (windows) {
                 final msys2Setup = project.tasks.getByName(MSYS2_SETUP)
-                msys2Setup.dependsOn(_config.msys2.cacheProject.tasks.getByName(MSYS2_SETUP))
+                if (_info.msys2.hasCache()) {
+                    msys2Setup.dependsOn project.tasks.getByName(MSYS2_DOWNLOAD)
+                } else {
+                    msys2Setup.dependsOn _info.msys2.cache.project.tasks.getByName(MSYS2_SETUP)
+                }
             }
         }
-        _config
+        _info
     }
 
     void msys2(final Action<Msys2Spec> action) {
@@ -45,26 +50,20 @@ class ShellScriptExtension {
         msys2(new ClosureBackedAction<Msys2Spec>(closure))
     }
 
-    Iterable<String> getShellArgs() {
+    Collection<String> getShellArgs() {
         _shellArgs
     }
 
-    void setShellArgs(final Iterable<String> value) {
+    void setShellArgs(final Collection<String> value) {
         _shellArgs.clear()
-        for (arg in value) {
-            _shellArgs.add(arg)
-        }
+        _shellArgs.addAll(value)
     }
 
     void shellArgs(final Iterable<String> value) {
-        for (arg in value) {
-            _shellArgs.add(arg)
-        }
+        _shellArgs.addAll(value)
     }
 
     void shellArgs(final String... value) {
-        for (arg in value) {
-            _shellArgs.add(arg)
-        }
+        _shellArgs.addAll(value)
     }
 }

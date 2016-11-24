@@ -3,6 +3,7 @@ package com.github.jishida.gradle.shellscript
 import com.github.jishida.gradle.shellscript.archive.TarXZUnarchiver
 import nebula.test.PluginProjectSpec
 import org.gradle.api.Project
+import org.gradle.api.internal.file.UnionFileCollection
 import org.gradle.api.internal.project.AbstractProject
 
 import static com.github.jishida.gradle.shellscript.ShellScriptStrings.*
@@ -18,10 +19,10 @@ class ShellScriptPluginTest extends PluginProjectSpec {
         setup:
         project.apply plugin: pluginName
         final ext = project.extensions.getByType(ShellScriptExtension)
-        def config = ext.config
+        def info = ext.info
 
         expect:
-        config == null
+        info == null
         ext.project == project
         ext.unixShell == 'bash'
         ext.shellArgs == []
@@ -35,136 +36,154 @@ class ShellScriptPluginTest extends PluginProjectSpec {
         ext.msys2.cacheDir == new File(projectDir, DEFAULT_MSYS2_CACHE_PATH)
         ext.msys2.setup
 
-        (config = ext.configure()) != null
-        config.project == project
-        config.unixShell == 'bash'
-        config.shellArgs == []
-        config.msys2.project == project
-        config.msys2.cacheProject == null
-        config.msys2.distUrl == new URL(DEFAULT_MSYS2_DIST_URL)
-        config.msys2.cacheDir == new File(projectDir, DEFAULT_MSYS2_CACHE_PATH)
-        config.msys2.expandDir == new File(projectDir, "${DEFAULT_MSYS2_CACHE_PATH}/local").canonicalFile
-        config.msys2.bashFile == new File(config.msys2.expandDir, DEFAULT_MSYS2_BASH_PATH).canonicalFile
-        config.msys2.archiveFile == new File(projectDir, "${DEFAULT_MSYS2_CACHE_PATH}/archive/msys2-base-i686-20161025.tar.xz")
-        config.msys2.unarchiverClass == TarXZUnarchiver
-        config.msys2.hash == null
-        config.msys2.verify
-        config.msys2.setup
+        (info = ext.configure()) != null
+        info.project == project
+        info.unixShell == 'bash'
+        info.shellArgs == []
+        info.msys2.project == project
+        info.msys2.hasCache()
+        info.msys2.cache.distUrl == new URL(DEFAULT_MSYS2_DIST_URL)
+        info.msys2.cache.workingDir == project.file(DEFAULT_MSYS2_CACHE_PATH)
+        info.msys2.cache.expandDir == project.file("${DEFAULT_MSYS2_CACHE_PATH}/local").canonicalFile
+        info.msys2.cache.bashFile == new File(info.msys2.cache.expandDir, DEFAULT_MSYS2_BASH_PATH).canonicalFile
+        info.msys2.cache.archiveFile == project.file("${DEFAULT_MSYS2_CACHE_PATH}/archive/msys2-base-i686-20161025.tar.xz")
+        info.msys2.cache.unarchiverClass == TarXZUnarchiver
+        info.msys2.cache.hash == null
+        info.msys2.cache.verify
+        info.msys2.setup
     }
 
     def 'check multi-project configrations'() {
-        ['sub1', 'sub2', 'sub3', 'sub4'].each { subprojectName ->
-            final subproject = createSubproject(project, subprojectName)
-            project.subprojects.add(subproject)
-        }
-        final sub1 = project.project(':sub1')
-        final sub2 = project.project(':sub2')
-        final sub3 = project.project(':sub3')
-        final sub4 = project.project(':sub4')
+        final project0 = project
+        final project1 = createSubproject(project, 'project1')
+        final project2 = createSubproject(project, 'project2')
+        final project3 = createSubproject(project, 'project3')
+        final project4 = createSubproject(project, 'project4')
 
         project.apply plugin: pluginName
-        sub1.apply plugin: pluginName
-        sub2.apply plugin: pluginName
-        sub3.apply plugin: pluginName
+        project1.apply plugin: pluginName
+        project2.apply plugin: pluginName
+        project3.apply plugin: pluginName
 
         when:
-        final ext = project.extensions.findByType(ShellScriptExtension)
-        final sub1Ext = sub1.extensions.findByType(ShellScriptExtension)
-        final sub2Ext = sub2.extensions.findByType(ShellScriptExtension)
-        final sub3Ext = sub3.extensions.findByType(ShellScriptExtension)
-        final sub4ExtNull = sub4.extensions.findByType(ShellScriptExtension)
+        final ext0 = project0.extensions.findByType(ShellScriptExtension)
+        final ext1 = project1.extensions.findByType(ShellScriptExtension)
+        final ext2 = project2.extensions.findByType(ShellScriptExtension)
+        final ext3 = project3.extensions.findByType(ShellScriptExtension)
+        final ext4Null = project4.extensions.findByType(ShellScriptExtension)
 
         then:
-        ext != null
-        sub1Ext != null
-        sub2Ext != null
-        sub3Ext != null
-        sub4ExtNull == null
+        ext0 != null
+        ext1 != null
+        ext2 != null
+        ext3 != null
+        ext4Null == null
 
         when:
-        ext.msys2.cacheDir = new File(projectDir, 'temp')
-        ext.msys2.bashPath = 'msys64/usr/bin/bash.exe'
-        ext.msys2.distUrl = 'http://repo.msys2.org/distrib/i686/msys2-base-x86_64-20161025.tar.xz'
-        ext.msys2.verify = false
-        ext.msys2.sha256 = 'bb1f1a0b35b3d96bf9c15092da8ce969a84a134f7b08811292fbc9d84d48c65d'
-        sub2Ext.msys2.cacheProject = sub1
-        sub3Ext.msys2.cacheProject = sub4
+        ext0.msys2.cacheDir = project.file('temp')
+        ext0.msys2.bashPath = 'msys64/usr/bin/bash.exe'
+        ext0.msys2.distUrl = 'http://repo.msys2.org/distrib/i686/msys2-base-x86_64-20161025.tar.xz'
+        ext0.msys2.verify = false
+        ext0.msys2.sha256 = 'bb1f1a0b35b3d96bf9c15092da8ce969a84a134f7b08811292fbc9d84d48c65d'
+        ext2.msys2.cacheProject = project1
+        ext3.msys2.cacheProject = project4
 
-        evaluate(project)
-        evaluate(sub1)
-        evaluate(sub2)
-        evaluate(sub3)
-        evaluate(sub4)
+        evaluate(project0)
+        evaluate(project1)
+        evaluate(project2)
+        evaluate(project3)
+        evaluate(project4)
 
-        final sub4Ext = sub4.extensions.findByType(ShellScriptExtension)
+        final ext4 = project4.extensions.findByType(ShellScriptExtension)
 
         then:
-        sub4Ext != null
+        ext4 != null
 
         when:
-        final config = ext.config
-        final sub1Config = sub1Ext.config
-        final sub2Config = sub2Ext.config
-        final sub3Config = sub3Ext.config
-        final sub4Config = sub4Ext.config
+        final info0 = ext0.info
+        final info1 = ext1.info
+        final info2 = ext2.info
+        final info3 = ext3.info
+        final info4 = ext4.info
 
         then:
-        config.msys2.cacheDir == new File(projectDir, 'temp')
-        config.msys2.bashFile == new File(projectDir, "temp/local/msys64/usr/bin/bash.exe")
-        config.msys2.distUrl == new URL('http://repo.msys2.org/distrib/i686/msys2-base-x86_64-20161025.tar.xz')
-        !config.msys2.verify
-        config.msys2.hash == 'bb1f1a0b35b3d96bf9c15092da8ce969a84a134f7b08811292fbc9d84d48c65d'
+        info0.msys2.cache.workingDir == project.file('temp')
+        info0.msys2.cache.bashFile == new File(projectDir, "temp/local/msys64/usr/bin/bash.exe")
+        info0.msys2.cache.distUrl == new URL('http://repo.msys2.org/distrib/i686/msys2-base-x86_64-20161025.tar.xz')
+        !info0.msys2.cache.verify
+        info0.msys2.cache.hash == 'bb1f1a0b35b3d96bf9c15092da8ce969a84a134f7b08811292fbc9d84d48c65d'
 
-        verifyCacheProject(config.msys2, config.msys2)
-        verifyCacheProject(config.msys2, sub1Config.msys2)
-        verifyCacheProject(config.msys2, sub2Config.msys2)
-        verifyCacheProject(sub4Config.msys2, sub3Config.msys2)
+        info0.msys2.hasCache()
+        !info1.msys2.hasCache()
+        !info2.msys2.hasCache()
+        !info3.msys2.hasCache()
+        info4.msys2.hasCache()
+
+        info0.msys2.setup
+        !info1.msys2.setup
+        !info2.msys2.setup
+        !info3.msys2.setup
+        info4.msys2.setup
+
+        info0.msys2.cache == info1.msys2.cache
+        info0.msys2.cache == info2.msys2.cache
+        info0.msys2.cache != info3.msys2.cache
+        info3.msys2.cache == info4.msys2.cache
+
+        project0 == info0.msys2.cache.project
+        project0 == info1.msys2.cache.project
+        project0 == info2.msys2.cache.project
+        project4 == info3.msys2.cache.project
+        project4 == info4.msys2.cache.project
 
         when:
-        final msys2Setup = project.tasks.findByName(Tasks.MSYS2_SETUP)
-        final sub1Msys2Setup = sub1.tasks.findByName(Tasks.MSYS2_SETUP)
-        final sub2Msys2Setup = sub2.tasks.findByName(Tasks.MSYS2_SETUP)
-        final sub3Msys2Setup = sub3.tasks.findByName(Tasks.MSYS2_SETUP)
-        final sub4Msys2Setup = sub4.tasks.findByName(Tasks.MSYS2_SETUP)
+        final msys2Download0 = project0.tasks.findByName(Tasks.MSYS2_DOWNLOAD)
+        final msys2Download1 = project1.tasks.findByName(Tasks.MSYS2_DOWNLOAD)
+        final msys2Download2 = project2.tasks.findByName(Tasks.MSYS2_DOWNLOAD)
+        final msys2Download3 = project3.tasks.findByName(Tasks.MSYS2_DOWNLOAD)
+        final msys2Download4 = project4.tasks.findByName(Tasks.MSYS2_DOWNLOAD)
+
+        final msys2Setup0 = project0.tasks.findByName(Tasks.MSYS2_SETUP)
+        final msys2Setup1 = project1.tasks.findByName(Tasks.MSYS2_SETUP)
+        final msys2Setup2 = project2.tasks.findByName(Tasks.MSYS2_SETUP)
+        final msys2Setup3 = project3.tasks.findByName(Tasks.MSYS2_SETUP)
+        final msys2Setup4 = project4.tasks.findByName(Tasks.MSYS2_SETUP)
 
         then:
-        windows  || msys2Setup == null
-        windows  || sub1Msys2Setup == null
-        windows  || sub2Msys2Setup == null
-        windows  || sub3Msys2Setup == null
-        windows  || sub4Msys2Setup == null
+        windows ^ msys2Download0 == null
+        windows ^ msys2Setup0 == null
 
-        !windows || msys2Setup.dependsOn.size() == 2
-        !windows || msys2Setup.dependsOn.contains(Tasks.MSYS2_DOWNLOAD)
+        !windows || msys2Download0.dependsOn.findAll { !(it instanceof UnionFileCollection) }.size() == 0
+        !windows || msys2Setup0.dependsOn.findAll { !(it instanceof UnionFileCollection) }.size() == 1
+        !windows || msys2Setup0.dependsOn.contains(msys2Download0)
 
-        !windows || sub1Msys2Setup.dependsOn.size() == (windows ? 3 : 2)
-        !windows || sub1Msys2Setup.dependsOn.contains(Tasks.MSYS2_DOWNLOAD)
-        !windows || sub1Msys2Setup.dependsOn.contains(msys2Setup)
+        windows ^ msys2Download1 == null
+        windows ^ msys2Setup1 == null
 
-        !windows || sub2Msys2Setup.dependsOn.size() == (windows ? 3 : 2)
-        !windows || sub2Msys2Setup.dependsOn.contains(Tasks.MSYS2_DOWNLOAD)
-        !windows || sub2Msys2Setup.dependsOn.contains(msys2Setup)
+        !windows || msys2Download1.dependsOn.findAll { !(it instanceof UnionFileCollection) }.size() == 0
+        !windows || msys2Setup1.dependsOn.findAll { !(it instanceof UnionFileCollection) }.size() == 1
+        !windows || msys2Setup1.dependsOn.contains(msys2Setup0)
 
-        !windows || sub3Msys2Setup.dependsOn.size() == 3
-        !windows || sub3Msys2Setup.dependsOn.contains(Tasks.MSYS2_DOWNLOAD)
-        !windows || sub3Msys2Setup.dependsOn.contains(sub4Msys2Setup)
+        windows ^ msys2Download2 == null
+        windows ^ msys2Setup2 == null
 
-        !windows || sub4Msys2Setup.dependsOn.size() == 2
-        !windows || sub4Msys2Setup.dependsOn.contains(Tasks.MSYS2_DOWNLOAD)
-    }
+        !windows || msys2Download2.dependsOn.findAll { !(it instanceof UnionFileCollection) }.size() == 0
+        !windows || msys2Setup2.dependsOn.findAll { !(it instanceof UnionFileCollection) }.size() == 1
+        !windows || msys2Setup2.dependsOn.contains(msys2Setup0)
 
-    private static boolean verifyCacheProject(final Msys2Config cache, final Msys2Config config) {
-        cache.cacheProject == null &&
-                (config.cacheProject == null || config.cacheProject == cache.project) &&
-                (config.cacheProject == null || !config.setup) &&
-                cache.distUrl == config.distUrl &&
-                cache.cacheDir == config.cacheDir &&
-                cache.expandDir == config.expandDir &&
-                cache.bashFile == config.bashFile &&
-                cache.archiveFile == config.archiveFile &&
-                cache.unarchiverClass == config.unarchiverClass &&
-                cache.hash == config.hash &&
-                cache.verify == config.verify
+        windows ^ msys2Download3 == null
+        windows ^ msys2Setup3 == null
+
+        !windows || msys2Download3.dependsOn.findAll { !(it instanceof UnionFileCollection) }.size() == 0
+        !windows || msys2Setup3.dependsOn.findAll { !(it instanceof UnionFileCollection) }.size() == 1
+        !windows || msys2Setup3.dependsOn.contains(msys2Setup4)
+
+        windows ^ msys2Download4 == null
+        windows ^ msys2Setup4 == null
+
+        !windows || msys2Download4.dependsOn.findAll { !(it instanceof UnionFileCollection) }.size() == 0
+        !windows || msys2Setup4.dependsOn.findAll { !(it instanceof UnionFileCollection) }.size() == 1
+        !windows || msys2Setup4.dependsOn.contains(msys2Download4)
     }
 
     private static void evaluate(final Project project) {
