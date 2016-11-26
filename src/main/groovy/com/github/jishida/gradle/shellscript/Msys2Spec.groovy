@@ -24,6 +24,7 @@ class Msys2Spec {
     String archiveType = 'tar.xz'
     String sha256
     boolean verify = true
+    boolean ignoreCertificate = false
     File cacheDir
     boolean setup = true
 

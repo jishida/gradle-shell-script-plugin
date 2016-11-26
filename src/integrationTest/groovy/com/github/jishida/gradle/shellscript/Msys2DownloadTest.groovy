@@ -4,7 +4,7 @@ import static com.github.jishida.gradle.shellscript.ShellScriptStrings.Tasks
 
 class Msys2DownloadTest extends AbstractShellScriptTest {
     private def getArchiveFile() {
-        new File(projectDir, "cache dir/archive/$MSYS2_TEST_ARCHIVE_NAME")
+        new File(projectDir, "cache dir/archive/$TEST_MSYS2_ARCHIVE_NAME")
     }
 
     def 'run `msys2Download` task'() {
