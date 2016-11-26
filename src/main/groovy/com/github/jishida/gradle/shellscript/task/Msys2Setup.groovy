@@ -37,12 +37,14 @@ class Msys2Setup extends AbstractShellScriptTask {
     void setup() {
         if (!msys2Info.setup) return
 
-        cacheInfo.expandDir.deleteDir()
-        cacheInfo.expandDir.mkdirs()
+        if (!cacheInfo.bashFile.file) {
+            cacheInfo.expandDir.deleteDir()
+            cacheInfo.expandDir.mkdirs()
 
-        project.copy {
-            it.from(cacheInfo.unarchive())
-            it.into(cacheInfo.expandDir)
+            project.copy {
+                it.from(cacheInfo.unarchive())
+                it.into(cacheInfo.expandDir)
+            }
         }
 
         project.exec {
