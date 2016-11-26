@@ -1,6 +1,7 @@
 package com.github.jishida.gradle.shellscript.util
 
-import com.github.jishida.gradle.shellscript.Msys2Config
+import com.github.jishida.gradle.shellscript.Msys2CacheInfo
+import com.github.jishida.gradle.shellscript.Msys2Info
 import com.github.jishida.gradle.shellscript.Msys2Spec
 import com.github.jishida.gradle.shellscript.ShellScriptExtension
 import com.github.jishida.gradle.shellscript.ShellScriptPlugin
@@ -15,12 +16,12 @@ final class ProjectUtils {
         getShellScriptExtension(project)?.msys2
     }
 
-    static Msys2Config getBaseMsys2Config(final Project project) {
+    static Msys2CacheInfo getCacheInfo(final Project project) {
         final cacheProject = getMsys2Extension(project).cacheProject ?: project.rootProject
         if (getMsys2Extension(cacheProject) == null) {
             cacheProject.apply plugin: ShellScriptPlugin
             getShellScriptExtension(cacheProject).msys2.cacheProject = cacheProject
         }
-        cacheProject == project ? null : getShellScriptExtension(cacheProject).configure().msys2
+        cacheProject == project ? null : getShellScriptExtension(cacheProject).configure().msys2.cache
     }
 }

@@ -1,20 +1,14 @@
-buildscript {
-    repositories {
-        maven { url 'https://plugins.gradle.org/m2/' }
-    }
-
-    dependencies {
-        classpath group: 'com.gradle.publish', name: 'plugin-publish-plugin', version: '0.9.6'
-        classpath group: 'com.jfrog.bintray.gradle', name: 'gradle-bintray-plugin', version: '1.7.2'
-    }
+plugins {
+    id 'com.gradle.plugin-publish' version '0.9.6'
+    id 'com.jfrog.bintray' version '1.7.3'
 }
 
-group 'com.github.jishida.gradle'
-
 apply plugin: 'groovy'
+apply plugin: 'maven-publish'
 apply from: file('gradle/integration-test.gradle')
 apply from: file('gradle/publishing.gradle')
 
+group 'com.github.jishida.gradle'
 sourceCompatibility = compatibilityVersion
 targetCompatibility = compatibilityVersion
 

@@ -1,60 +1,52 @@
 package com.github.jishida.gradle.shellscript.task
 
-import com.github.jishida.gradle.shellscript.Msys2Config
-import org.gradle.api.DefaultTask
+import com.github.jishida.gradle.shellscript.Msys2CacheInfo
 import org.gradle.api.tasks.*
 
-import static com.github.jishida.gradle.shellscript.ShellScriptStrings.PLUGIN_ID
-import static com.github.jishida.gradle.shellscript.ShellScriptStrings.Tasks
-
 class Msys2Setup extends AbstractShellScriptTask {
-    Msys2Setup() {
-        dependsOn(Tasks.MSYS2_DOWNLOAD)
-    }
-
-    Msys2Config getConfig() {
-        shellScriptConfig?.msys2
+    Msys2CacheInfo getCacheInfo() {
+        msys2Info?.cache
     }
 
     @InputFile
     File getArchiveFile() {
-        config?.archiveFile
+        cacheInfo?.archiveFile
     }
 
     @OutputDirectory
     File getOutputDir() {
-        config?.expandDir
+        cacheInfo?.expandDir
     }
 
     @Input
     boolean isSetup() {
-        config?.setup
+        msys2Info?.setup
     }
 
     @Input
     Class getUnarchiverClass() {
-        config?.unarchiverClass
+        cacheInfo?.unarchiverClass
     }
 
     @OutputFile
     File getBashFile() {
-        config?.bashFile
+        cacheInfo?.bashFile
     }
 
     @TaskAction
     void setup() {
-        if (!config.setup) return
+        if (!msys2Info.setup) return
 
-        config.expandDir.deleteDir()
-        config.expandDir.mkdirs()
+        cacheInfo.expandDir.deleteDir()
+        cacheInfo.expandDir.mkdirs()
 
         project.copy {
-            it.from(config.unarchive())
-            it.into(config.expandDir)
+            it.from(cacheInfo.unarchive())
+            it.into(cacheInfo.expandDir)
         }
 
         project.exec {
-            it.executable = config.bashFile
+            it.executable = cacheInfo.bashFile
             it.args = ['--login', '-c', 'exit 0',]
         }.rethrowFailure()
     }

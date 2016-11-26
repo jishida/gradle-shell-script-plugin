@@ -81,15 +81,15 @@ class ShellScript extends AbstractShellScriptTask {
 
     @Input
     Object getShellExecutable() {
-        shellScriptConfig?.shellExecutable
+        shellScriptInfo?.shellExecutable
     }
 
     @Input
     List<String> getAllArgs() {
-        if (shellScriptConfig == null) return null
+        if (shellScriptInfo == null) return null
         final result = []
         if (windows) result.add('--login')
-        if (!shellScriptConfig.shellArgs.empty) result.addAll(shellScriptConfig.shellArgs)
+        if (!shellScriptInfo.shellArgs.empty) result.addAll(shellScriptInfo.shellArgs)
         if (!_shellArgs.empty) result.addAll(_shellArgs)
         if (scriptFile != null) {
             result.add(scriptFile.canonicalPath)

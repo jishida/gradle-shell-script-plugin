@@ -1,6 +1,6 @@
 package com.github.jishida.gradle.shellscript.task
 
-import com.github.jishida.gradle.shellscript.Msys2Config
+import com.github.jishida.gradle.shellscript.Msys2CacheInfo
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.OutputFile
 import org.gradle.api.tasks.TaskAction
@@ -9,48 +9,48 @@ import static com.github.jishida.gradle.shellscript.util.FileUtils.deleteFile
 import static com.github.jishida.gradle.shellscript.util.FileUtils.verifyMsys2Archive
 
 class Msys2Download extends AbstractShellScriptTask {
-    Msys2Config getConfig() {
-        shellScriptConfig?.msys2
+    Msys2CacheInfo getCacheInfo() {
+        msys2Info?.cache
     }
 
     @Input
     URL getDistUrl() {
-        config?.distUrl
+        cacheInfo?.distUrl
     }
 
     @OutputFile
     File getArchiveFile() {
-        config?.archiveFile
+        cacheInfo?.archiveFile
     }
 
     @Input
     boolean isSetup() {
-        config?.setup
+        msys2Info?.setup
     }
 
     @Input
     boolean isVerify() {
-        config?.verify
+        cacheInfo?.verify
     }
 
     @Input
     String getHash() {
-        if (config == null) return null
-        config.verify ? config.hash : ''
+        if (shellScriptInfo == null) return null
+        cacheInfo.verify ? cacheInfo.hash : ''
     }
 
     @TaskAction
     protected void download() {
-        if (!config.setup) return
+        if (!msys2Info.setup) return
 
-        deleteFile(config.archiveFile)
-        config.archiveFile.parentFile.mkdirs()
-        config.distUrl.openStream().withStream {
-            config.archiveFile << it
+        deleteFile(cacheInfo.archiveFile)
+        cacheInfo.archiveFile.parentFile.mkdirs()
+        cacheInfo.distUrl.openStream().withStream {
+            cacheInfo.archiveFile << it
         }
 
-        if (config.verify && !verifyMsys2Archive(config.archiveFile, config.hash)) {
-            throw new UnsupportedOperationException("failed to verify `${config.archiveFile}`.")
+        if (cacheInfo.verify && !verifyMsys2Archive(cacheInfo.archiveFile, cacheInfo.hash)) {
+            throw new UnsupportedOperationException("failed to verify `${cacheInfo.archiveFile}`.")
         }
     }
 }
