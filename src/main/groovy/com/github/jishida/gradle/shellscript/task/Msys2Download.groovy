@@ -7,6 +7,7 @@ import org.gradle.api.tasks.TaskAction
 
 import static com.github.jishida.gradle.shellscript.util.FileUtils.deleteFile
 import static com.github.jishida.gradle.shellscript.util.FileUtils.verifyMsys2Archive
+import static com.github.jishida.gradle.shellscript.util.URLUtils.downloadFile
 
 class Msys2Download extends AbstractShellScriptTask {
     Msys2CacheInfo getCacheInfo() {
@@ -45,9 +46,7 @@ class Msys2Download extends AbstractShellScriptTask {
 
         deleteFile(cacheInfo.archiveFile)
         cacheInfo.archiveFile.parentFile.mkdirs()
-        cacheInfo.distUrl.openStream().withStream {
-            cacheInfo.archiveFile << it
-        }
+        downloadFile(cacheInfo.distUrl, cacheInfo.archiveFile, cacheInfo.ignoreCertificate)
 
         if (cacheInfo.verify && !verifyMsys2Archive(cacheInfo.archiveFile, cacheInfo.hash)) {
             throw new UnsupportedOperationException("failed to verify `${cacheInfo.archiveFile}`.")

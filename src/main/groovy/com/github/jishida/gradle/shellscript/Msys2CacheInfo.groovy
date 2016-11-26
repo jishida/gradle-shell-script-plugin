@@ -21,6 +21,7 @@ class Msys2CacheInfo {
     final Class<? extends Unarchiver> unarchiverClass
     final String hash
     final boolean verify
+    final boolean ignoreCertificate
 
     @PackageScope
     Msys2CacheInfo(final Msys2Spec spec) {
@@ -35,6 +36,7 @@ class Msys2CacheInfo {
         unarchiverClass = spec.unarchiverClass
         hash = spec.sha256
         verify = spec.verify
+        ignoreCertificate = spec.ignoreCertificate
         _unarchiver = unarchiverClass.getConstructor().newInstance()
     }
 
