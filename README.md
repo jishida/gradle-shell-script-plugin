@@ -20,7 +20,7 @@ buildscript {
     }
     
     dependencies {
-        classpath 'com.github.jishida.gradle:gradle-shell-script-plugin:0.2.3'
+        classpath 'com.github.jishida.gradle:gradle-shell-script-plugin:0.2.4'
     }
 }
 
@@ -29,7 +29,7 @@ apply plugin: 'com.github.jishida.shellscript'
 or
 ```gradle
 plugins {
-    id 'com.github.jishida.shellscript' version '0.2.3'
+    id 'com.github.jishida.shellscript' version '0.2.4'
 }
 ```
 ## Running a shell script
@@ -80,6 +80,11 @@ shellscript {
         // type: boolean
         // default: true
         verify = true
+        
+        // enable to download from untrusted host
+        // type: boolean
+        // default: false
+        ignoreCertificate = false
         
         // SHA-256 hash of MSYS2 archive file
         // type: java.lang.String
