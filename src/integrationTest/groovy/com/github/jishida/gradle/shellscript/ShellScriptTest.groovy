@@ -1,12 +1,20 @@
 package com.github.jishida.gradle.shellscript
 
+import static com.github.jishida.gradle.shellscript.TestStrings.TEST_CACHE_PATH
+
 class ShellScriptTest extends AbstractShellScriptTest {
     final static TASK_NAME = 'runShellScript'
+
+    private def getMsys2Dir() {
+        new File(projectDir, 'cache dir/msys32')
+    }
 
     def setup() {
         buildFile << """
         // ShellScriptTest
-        task $TASK_NAME(type: ShellScript)
+        task ${TASK_NAME}(type: ShellScript) << {
+            execResult.rethrowFailure()
+        }
         """.stripIndent()
     }
 
@@ -18,9 +26,34 @@ class ShellScriptTest extends AbstractShellScriptTest {
         new File(projectDir, 'output file')
     }
 
+    def 'run shell script from file with setup'() {
+        buildFile << """
+        // run shell script from file with setup
+        ${TASK_NAME}.scriptFile = file('test.sh')
+        """.stripIndent()
+
+        scriptFile << '''
+        #!/usr/bin/env bash
+        exit 0
+        '''.stripIndent()
+
+        when:
+        def result = runTasks(TASK_NAME)
+
+        then:
+        result.success
+        result.wasExecuted(TASK_NAME)
+    }
+
     def 'run shell script from file'() {
         buildFile << """
         // run shell script from file
+        shellscript {
+            msys2 {
+                cacheDir = file('../../../../${TEST_CACHE_PATH}')
+                setup = false
+            }
+        }
         ${TASK_NAME}.scriptFile = file('test.sh')
         ${TASK_NAME}.args = ['output file']
         ${TASK_NAME}.outputs.file file('output file')
@@ -33,7 +66,6 @@ class ShellScriptTest extends AbstractShellScriptTest {
 
         when:
         def result = runTasks(TASK_NAME)
-        result.rethrowFailure()
 
         then:
         result.success
@@ -42,7 +74,6 @@ class ShellScriptTest extends AbstractShellScriptTest {
 
         when:
         result = runTasks(TASK_NAME)
-        result.rethrowFailure()
 
         then:
         result.success
@@ -56,7 +87,6 @@ class ShellScriptTest extends AbstractShellScriptTest {
 
         when:
         result = runTasks(TASK_NAME)
-        result.rethrowFailure()
 
         then:
         result.success
@@ -65,7 +95,6 @@ class ShellScriptTest extends AbstractShellScriptTest {
         when:
         scriptFile.setLastModified(System.currentTimeMillis())
         result = runTasks(TASK_NAME)
-        result.rethrowFailure()
 
         then:
         result.success
@@ -76,7 +105,6 @@ class ShellScriptTest extends AbstractShellScriptTest {
         ${TASK_NAME}.workingDir = file('working_dir')
         """.stripIndent()
         result = runTasks(TASK_NAME)
-        result.rethrowFailure()
 
         then:
         new File(projectDir, 'working_dir/output file').file
@@ -94,15 +122,25 @@ class ShellScriptTest extends AbstractShellScriptTest {
         result = runTasks(TASK_NAME)
 
         then:
-        result.failure
+        !result.success
     }
 
     def 'run shell script from text'() {
+        buildFile << """
+        // run shell script from text
+        shellscript {
+            msys2 {
+                cacheDir = file('../../../../${TEST_CACHE_PATH}')
+                setup = false
+            }
+        }
+        """.stripIndent()
+
         when:
         def result = runTasks(TASK_NAME)
 
         then:
-        result.failure
+        !result.success
 
         when:
         buildFile << """
@@ -110,7 +148,6 @@ class ShellScriptTest extends AbstractShellScriptTest {
         ${TASK_NAME}.scriptText = 'exit 0'
         """.stripIndent()
         result = runTasks(TASK_NAME)
-        result.rethrowFailure()
 
         then:
         result.success
@@ -123,6 +160,6 @@ class ShellScriptTest extends AbstractShellScriptTest {
         result = runTasks(TASK_NAME)
 
         then:
-        result.failure
+        !result.success
     }
 }
