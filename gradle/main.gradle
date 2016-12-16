@@ -1,0 +1,19 @@
+group 'com.github.jishida.gradle'
+
+apply plugin: 'groovy'
+apply from: file('gradle/integration-test.gradle')
+
+sourceCompatibility = compatibilityVersion
+targetCompatibility = compatibilityVersion
+
+repositories {
+    jcenter()
+}
+
+dependencies {
+    compile gradleApi()
+    testCompile group: 'org.apache.commons', name: 'commons-compress', version: '1.12'
+    testCompile group: 'com.netflix.nebula', name: 'nebula-test', version: '4.2.2'
+}
+
+task installDeps

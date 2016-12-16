@@ -1,0 +1,39 @@
+buildscript {
+    if (project == rootProject) {
+        repositories {
+            mavenCentral()
+        }
+
+        dependencies {
+            classpath group: 'org.eclipse.jgit', name: 'org.eclipse.jgit', version: '4.5.0.201609210915-r'
+        }
+    }
+}
+
+apply from: file('gradle/main.gradle')
+
+final props = new Properties()
+file('gradle.properties').withInputStream {
+    props.load(it)
+}
+version = props.getProperty('version')
+sourceCompatibility = props.getProperty('compatibilityVersion')
+targetCompatibility = props.getProperty('compatibilityVersion')
+
+dependencies {
+    compile project(':gradle-plugin-commons')
+}
+
+import org.eclipse.jgit.api.Git
+
+task installGradlePluginCommons << {
+    final dependencyDir = file('gradle-plugin-commons')
+    dependencyDir.deleteDir()
+    Git.cloneRepository()
+            .setDirectory(dependencyDir)
+            .setURI('https://github.com/jishida/gradle-plugin-commons.git')
+            .setBranch('development')
+            .call()
+}
+
+installDeps.dependsOn(installGradlePluginCommons)

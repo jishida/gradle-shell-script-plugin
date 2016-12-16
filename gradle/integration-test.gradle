@@ -1,6 +1,6 @@
 sourceSets {
     integrationTest { sourceSet ->
-        ['java', 'groovy', 'scala', 'kotlin', 'clojure', 'resources']
+        ['java', 'groovy', 'resources']
                 .findAll { sourceSet.hasProperty(it) }
                 .each { sourceSet."$it".srcDir file("src/integrationTest/$it") }
     }
@@ -13,6 +13,28 @@ dependencies {
     integrationTestRuntime configurations.testRuntime
 }
 
+task prepareIntegrationTest {
+    final scriptFile = new File(buildDir, "tmp/${project.group}/${project.name}/integration-test-deps.gradle")
+
+    inputs.files sourceSets.main.compileClasspath
+    outputs.file scriptFile
+
+    doLast {
+        final dependenciesLines = sourceSets.main.compileClasspath.collect {
+            final path = it.canonicalPath.replace('\\', '\\\\').replace('\'', '\\\'')
+            """
+            classpath files('${path}')"""
+        }.join('')
+
+        scriptFile.delete()
+        scriptFile.parentFile.mkdirs()
+        scriptFile << """\
+        dependencies {${dependenciesLines}
+        }
+        """.stripIndent()
+    }
+}
+
 task integrationTest(type: Test, dependsOn: jar) {
     group = 'verification'
     testClassesDir = sourceSets.integrationTest.output.classesDir
@@ -21,3 +43,4 @@ task integrationTest(type: Test, dependsOn: jar) {
 }
 
 check.dependsOn integrationTest
+integrationTest.dependsOn prepareIntegrationTest

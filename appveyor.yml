@@ -3,5 +3,11 @@ version: "{branch} {build}"
 build:
   verbosity: detailed
 
+before_build:
+- gradlew installDeps
+
 build_script:
 - gradlew build
+
+cache:
+- .gradle

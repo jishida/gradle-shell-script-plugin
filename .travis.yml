@@ -11,4 +11,6 @@ matrix:
 cache:
   directories:
   - $HOME/.gradle
-  - $HOME/build/cache
+
+before_install:
+- ./gradlew installDeps

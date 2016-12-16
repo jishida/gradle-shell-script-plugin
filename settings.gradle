@@ -1,1 +1,21 @@
 rootProject.name = 'gradle-shell-script-plugin'
+
+final props = new Properties()
+new File(settingsDir, 'gradle.properties').withInputStream {
+    props.load(it)
+}
+
+void includeDev(final String name) {
+    if(new File(settingsDir, "${name}/development.gradle").file){
+        include name
+    }else{
+        includeFlat name
+    }
+    project(":${name}").buildFileName = 'development.gradle'
+}
+
+if (props.getProperty('version').endsWith('SNAPSHOT')) {
+    rootProject.buildFileName = 'development.gradle'
+
+    includeDev 'gradle-plugin-commons'
+}
